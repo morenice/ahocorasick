@@ -1,7 +1,8 @@
-C implementation Aho-Corasick string match
-======================
+C implementation Aho-Corasick string match.
 
 # Build
-## cd build
-## cmake ..
-## make
+```sh
+$ cd build
+$ cmake ..
+$ make
+```
