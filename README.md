@@ -2,7 +2,7 @@ C implementation Aho-Corasick string match.
 
 # Build
 ```sh
-$ cd build
+$ mkdir build; cd build
 $ cmake ..
 $ make
 ```
