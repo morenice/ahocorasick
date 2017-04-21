@@ -20,7 +20,7 @@ void aho_destroy(struct ahocorasick* aho)
 int aho_add_match_text(struct ahocorasick* aho, const char* text, unsigned int len)
 {
     struct aho_text_t* a_text = NULL;
-    if (aho->accumulate_text_id + 1 == INT_MAX)
+    if (aho->accumulate_text_id == AHO_MAX_TEXT_ID)
     {
         return -1;
     }
@@ -97,17 +97,11 @@ void aho_clear_match_text(struct ahocorasick* aho)
     {
         aho_del_match_text(aho, i);
     }
+
+    // reset id
+    aho->accumulate_text_id = 0;
 }
 
-void aho_print_match_text(struct ahocorasick* aho)
-{
-    struct aho_text_t* iter = NULL;
-    for (iter = aho->text_list_head; iter != NULL; iter = iter->next)
-    {
-        printf("id:%d text:%s len:%d this:%p prev:%p next:%p\n",
-                iter->id, iter->text, iter->len, iter, iter->prev, iter->next);
-    }
-}
 
 void aho_create_trie(struct ahocorasick* aho)
 {
@@ -119,9 +113,10 @@ void aho_create_trie(struct ahocorasick* aho)
         aho_add_trie_node(&(aho->trie), iter);
     }
 
+    aho_connect_link(&(aho->trie));
+
     /* debugging */
-    printf("\nprint trie........\n");
-    aho_print_trie(&(aho->trie));
+    //aho_print_trie(&(aho->trie));
 }
 
 void aho_clear_trie(struct ahocorasick* aho)
@@ -129,9 +124,58 @@ void aho_clear_trie(struct ahocorasick* aho)
     aho_destroy_trie(&aho->trie);
 }
 
-struct aho_match_t* aho_findtext(struct ahocorasick* aho,
-                                const char* data, unsigned long long data_len)
+unsigned int aho_findtext(struct ahocorasick* aho, const char* data, unsigned long long data_len)
 {
-    return NULL;
+    int i = 0;
+    int match_count = 0;
+    struct aho_trie_node* travasal_node = NULL;
+
+    travasal_node = &(aho->trie.root);
+
+    for (i = 0; i < data_len; i++)
+    {
+        struct aho_match_t match;
+        struct aho_text_t* result;
+
+        result = aho_find_trie_node(&travasal_node, data[i]);
+        if (result == NULL)
+        {
+            continue;
+        }
+
+        match.id = result->id;
+        match.len = result->len;
+
+        match.pos = i - result->len + 1;
+        if (result->len == 1)
+        {
+            match.pos = i;
+        }
+
+        match_count++;
+        if (aho->callback_match)
+        {
+            aho->callback_match(aho->callback_arg, &match);
+        }
+    }
+
+    return match_count;
 }
 
+inline void aho_register_match_callback(struct ahocorasick *aho,
+        void (*callback_match)(void* arg, struct aho_match_t*),
+        void *arg)
+{
+    aho->callback_arg = arg;
+    aho->callback_match = callback_match;
+}
+
+void aho_print_match_text(struct ahocorasick* aho)
+{
+    struct aho_text_t* iter = NULL;
+    for (iter = aho->text_list_head; iter != NULL; iter = iter->next)
+    {
+        printf("id:%d text:%s len:%d this:%p prev:%p next:%p\n",
+                iter->id, iter->text, iter->len, iter, iter->prev, iter->next);
+    }
+}

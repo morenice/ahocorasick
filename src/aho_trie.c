@@ -5,16 +5,17 @@
 #include "aho_text.h"
 #include "aho_queue.h"
 
-void _aho_trie_node_init(struct aho_trie_node* node)
+void __aho_trie_node_init(struct aho_trie_node* node)
 {
     memset(node, 0x00, sizeof(struct aho_trie_node));
-    node->output_link = false;
-    node->ref_count = 1; }
+    node->text_end = false;
+    node->ref_count = 1;
+}
 
 void aho_init_trie(struct aho_trie* t)
 {
     memset(t, 0x00, sizeof(struct aho_trie));
-    _aho_trie_node_init(&(t->root));
+    __aho_trie_node_init(&(t->root));
 }
 
 void aho_destroy_trie(struct aho_trie* t)
@@ -39,7 +40,7 @@ bool aho_add_trie_node(struct aho_trie* t, struct aho_text_t* text)
                          (struct aho_trie_node*) malloc(sizeof(struct aho_trie_node));
             travasal_node->child_count++;
 
-            _aho_trie_node_init(travasal_node->child_list[0]);
+            __aho_trie_node_init(travasal_node->child_list[0]);
             travasal_node->child_list[0]->text = node_text;
             travasal_node->child_list[0]->parent = travasal_node;
 
@@ -77,7 +78,7 @@ bool aho_add_trie_node(struct aho_trie* t, struct aho_text_t* text)
             child_node = travasal_node->child_list[travasal_node->child_count];
             travasal_node->child_count++;
 
-            _aho_trie_node_init(child_node);
+            __aho_trie_node_init(child_node);
             child_node->text = node_text;
             child_node->parent = travasal_node;
 
@@ -88,21 +89,180 @@ bool aho_add_trie_node(struct aho_trie* t, struct aho_text_t* text)
     // connect output link
     if (travasal_node)
     {
-        travasal_node->output_link = true;
+        travasal_node->text_end = true;
         travasal_node->output_text = text;
     }
-
     return true;
 }
 
-void aho_create_failure_link(struct aho_trie* t)
+bool __aho_connect_link(struct aho_trie_node* p, struct aho_trie_node* q)
 {
+    struct aho_trie_node *pf = NULL;
+    int i = 0;
 
+    /* is root node */
+    if (p->parent == NULL)
+    {
+        q->failure_link = p;
+        return true;
+    }
+
+    pf = p->failure_link;
+    for (i=0; i < pf->child_count; i++)
+    {
+        /* check child node of failure link(p) */
+        if (pf->child_list[i]->text == q->text )
+        {
+            /* connect failure link */
+            q->failure_link = pf->child_list[i];
+
+            /* connect output link */
+            if (pf->child_list[i]->text_end)
+            {
+                q->output_link = pf->child_list[i];
+            }
+            else
+            {
+                q->output_link = pf->child_list[i]->output_link;
+            }
+            return true;
+        }
+    }
+    return false;
 }
 
-bool aho_clean_trie_node(struct aho_trie* t)
+void aho_connect_link(struct aho_trie* t)
 {
-    return true;
+    struct aho_queue queue;
+    aho_queue_init(&queue);
+    aho_queue_enqueue(&queue, &(t->root));
+
+    /* BFS access
+     *  connect failure link and output link
+     */
+    while (true)
+    {
+        /* p :parent, q : child node */
+        struct aho_queue_node *queue_node = NULL;
+        struct aho_trie_node *p = NULL;
+        struct aho_trie_node *q = NULL;
+        int i = 0;
+
+        queue_node = aho_queue_dequeue(&queue);
+        if (queue_node == NULL)
+        {
+            break;
+        }
+
+        p = queue_node->data;
+        free(queue_node);
+
+        /* get child node list of p */
+        for (i=0; i < p->child_count; i++)
+        {
+            struct aho_trie_node *pf = p;
+
+            aho_queue_enqueue(&queue, p->child_list[i]);
+            q = p->child_list[i];
+
+            while (__aho_connect_link(pf, q) == false)
+            {
+                pf = pf->failure_link;
+            }
+        }
+    }
+
+    aho_queue_destroy(&queue);
+}
+
+void aho_clean_trie_node(struct aho_trie* t)
+{
+    struct aho_queue queue;
+    aho_queue_init(&queue);
+    aho_queue_enqueue(&queue, &(t->root));
+
+    /* BFS */
+    while (true)
+    {
+        struct aho_queue_node *queue_node = NULL;
+        struct aho_trie_node *remove_node = NULL;
+        int i = 0;
+
+        queue_node = aho_queue_dequeue(&queue);
+        if (queue_node == NULL)
+        {
+            break;
+        }
+
+        remove_node = queue_node->data;
+        free(queue_node);
+
+        for (i=0; i < remove_node->child_count; i++)
+        {
+            aho_queue_enqueue(&queue, remove_node->child_list[i]);
+        }
+
+        /* is root node */
+        if (remove_node->parent == NULL)
+        {
+            continue;
+        }
+
+        free(remove_node);
+    }
+}
+
+bool __aho_find_trie_node(struct aho_trie_node** start, const char text)
+{
+    struct aho_trie_node* search_node = NULL;
+    int i = 0;
+
+    search_node = *start;
+    for (i = 0; i < search_node->child_count; i++)
+    {
+        if (search_node->child_list[i]->text == text)
+        {
+            /* find it! move to find child node! */
+            *start = search_node->child_list[i];
+            return true;
+        }
+    }
+
+    /* not found */
+    return false;
+}
+
+struct aho_text_t* aho_find_trie_node(struct aho_trie_node** start, const char text)
+{
+    while (__aho_find_trie_node(start, text) == false)
+    {
+        /* not found!
+         * when root node stop
+         */
+        if( (*start)->parent == NULL)
+        {
+            return NULL;
+        }
+
+        /* retry find. move failure link. */
+        *start = (*start)->failure_link;
+    }
+
+    /* found node... */
+    /* match case1: find text end! */
+    if ((*start)->text_end)
+    {
+        return (*start)->output_text;
+    }
+
+    /* match case2: exist output_link */
+    if ((*start)->output_link)
+    {
+        return (*start)->output_link->output_text;
+    }
+
+    /* keep going */
+    return NULL;
 }
 
 void aho_print_trie(struct aho_trie* t)
@@ -111,6 +271,7 @@ void aho_print_trie(struct aho_trie* t)
     aho_queue_init(&queue);
     aho_queue_enqueue(&queue, &(t->root));
 
+    /* BFS */
     while (true)
     {
         struct aho_queue_node *queue_node = NULL;
@@ -130,24 +291,22 @@ void aho_print_trie(struct aho_trie* t)
         {
             aho_queue_enqueue(&queue, travasal_node->child_list[i]);
         }
-        // root node
+
+        /* is root node */
         if(travasal_node->parent == NULL)
         {
             printf("root node %p\n", travasal_node);
             continue;
         }
 
-        printf("%c node %p (parent %p)", travasal_node->text, travasal_node, travasal_node->parent);
-        if (travasal_node->output_link)
-        {
-            printf(" output_link(%d)\n", travasal_node->output_text->id);
-        }
-        else
-        {
-            printf("\n");
-        }
+        printf("%c (textend:%d) node %p ref %u (parent %p) failure_link(%p) output_link(%p)",
+                travasal_node->text, travasal_node->text_end,
+                travasal_node, travasal_node->ref_count,
+                travasal_node->parent, travasal_node->failure_link,
+                travasal_node->output_link);
+
+        printf("\n");
     }
 
-    aho_queue_dequeue(&queue);
+    aho_queue_destroy(&queue);
 }
-
