@@ -10,13 +10,8 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif(NOT CMAKE_BUILD_TYPE)
 
-if( CMAKE_BUILD_TYPE EQUAL Release)
-    set(CMAKE_C_FLAGS_RELEASE "-Wl -O2")
-endif( CMAKE_BUILD_TYPE EQUAL Release)
-
-if( CMAKE_BUILD_TYPE EQUAL Debug)
-    set(CMAKE_C_FLAGS_RELEASE "-Wl --ggdb")
-endif( CMAKE_BUILD_TYPE EQUAL Debug)
+set(CMAKE_C_FLAGS_RELEASE "-Wall -std=c11 -O2")
+set(CMAKE_C_FLAGS_DEBUG "-Wall -std=c11 -g")
 
 # Set source and header files
 file(GLOB SOURCES "src/*.c")
