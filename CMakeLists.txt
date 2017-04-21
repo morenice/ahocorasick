@@ -10,8 +10,8 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Debug)
 endif(NOT CMAKE_BUILD_TYPE)
 
-set(CMAKE_C_FLAGS_RELEASE "-Wall -std=c11 -O2")
-set(CMAKE_C_FLAGS_DEBUG "-Wall -std=c11 -g")
+set(CMAKE_C_FLAGS_RELEASE "-Wall -std=c99 -O2")
+set(CMAKE_C_FLAGS_DEBUG "-Wall -std=c99 -g")
 
 # Set source and header files
 file(GLOB SOURCES "src/*.c")
