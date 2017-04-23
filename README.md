@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/morenice/ahocorasick.svg?branch=master)](https://travis-ci.org/morenice/ahocorasick)
+
 C implementation Aho-Corasick string match.
 
 # Build
