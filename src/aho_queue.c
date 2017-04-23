@@ -2,12 +2,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-void aho_queue_init(struct aho_queue* que)
+void aho_queue_init(struct aho_queue * restrict que)
 {
     memset(que, 0x00, sizeof(struct aho_queue));
 }
 
-void aho_queue_destroy(struct aho_queue* que)
+void aho_queue_destroy(struct aho_queue * restrict que)
 {
     struct aho_queue_node* que_node = NULL;
     while ((que_node = aho_queue_dequeue(que)) != NULL)
@@ -16,7 +16,7 @@ void aho_queue_destroy(struct aho_queue* que)
     }
 }
 
-bool aho_queue_enqueue(struct aho_queue* que, struct aho_trie_node* node)
+bool aho_queue_enqueue(struct aho_queue * restrict que, struct aho_trie_node* node)
 {
     struct aho_queue_node* que_node;
     que_node = (struct aho_queue_node*) malloc(sizeof(struct aho_queue_node));
@@ -46,12 +46,12 @@ bool aho_queue_enqueue(struct aho_queue* que, struct aho_trie_node* node)
     return true;
 }
 
-inline bool aho_queue_empty(struct aho_queue *que)
+inline bool aho_queue_empty(struct aho_queue * restrict que)
 {
     return (que->count == 0);
 }
 
-struct aho_queue_node* aho_queue_dequeue(struct aho_queue* que)
+struct aho_queue_node* aho_queue_dequeue(struct aho_queue * restrict que)
 {
     struct aho_queue_node* deque_node;
     struct aho_queue_node* after_last_node;

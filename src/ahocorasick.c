@@ -6,18 +6,18 @@
 #include "ahocorasick.h"
 #include "aho_trie.h"
 
-void aho_init(struct ahocorasick* aho)
+void aho_init(struct ahocorasick * restrict aho)
 {
     memset(aho, 0x00, sizeof(struct ahocorasick));
 }
 
-void aho_destroy(struct ahocorasick* aho)
+void aho_destroy(struct ahocorasick * restrict aho)
 {
     aho_clear_match_text(aho);
     aho_clear_trie(aho);
 }
 
-int aho_add_match_text(struct ahocorasick* aho, const char* text, unsigned int len)
+int aho_add_match_text(struct ahocorasick * restrict aho, const char* text, unsigned int len)
 {
     struct aho_text_t* a_text = NULL;
     if (aho->accumulate_text_id == AHO_MAX_TEXT_ID)
@@ -57,7 +57,7 @@ lack_free_mem:
     return -1;
 }
 
-bool aho_del_match_text(struct ahocorasick* aho, int id)
+bool aho_del_match_text(struct ahocorasick * restrict aho, const int id)
 {
     struct aho_text_t* iter = NULL;
     for (iter = aho->text_list_head; iter != NULL; iter = iter->next)
@@ -91,7 +91,7 @@ bool aho_del_match_text(struct ahocorasick* aho, int id)
     return false;
 }
 
-void aho_clear_match_text(struct ahocorasick* aho)
+void aho_clear_match_text(struct ahocorasick * restrict aho)
 {
     for(int i = 0; i < aho->accumulate_text_id; i++)
     {
@@ -103,7 +103,7 @@ void aho_clear_match_text(struct ahocorasick* aho)
 }
 
 
-void aho_create_trie(struct ahocorasick* aho)
+void aho_create_trie(struct ahocorasick * restrict aho)
 {
     struct aho_text_t* iter = NULL;
     aho_init_trie(&(aho->trie));
@@ -119,12 +119,12 @@ void aho_create_trie(struct ahocorasick* aho)
     //aho_print_trie(&(aho->trie));
 }
 
-void aho_clear_trie(struct ahocorasick* aho)
+void aho_clear_trie(struct ahocorasick * restrict aho)
 {
     aho_destroy_trie(&aho->trie);
 }
 
-unsigned int aho_findtext(struct ahocorasick* aho, const char* data, unsigned long long data_len)
+unsigned int aho_findtext(struct ahocorasick * restrict aho, const char* data, unsigned long long data_len)
 {
     int i = 0;
     int match_count = 0;
@@ -162,7 +162,7 @@ unsigned int aho_findtext(struct ahocorasick* aho, const char* data, unsigned lo
     return match_count;
 }
 
-inline void aho_register_match_callback(struct ahocorasick *aho,
+inline void aho_register_match_callback(struct ahocorasick * restrict aho,
         void (*callback_match)(void* arg, struct aho_match_t*),
         void *arg)
 {
@@ -170,7 +170,7 @@ inline void aho_register_match_callback(struct ahocorasick *aho,
     aho->callback_match = callback_match;
 }
 
-void aho_print_match_text(struct ahocorasick* aho)
+void aho_print_match_text(struct ahocorasick * restrict aho)
 {
     struct aho_text_t* iter = NULL;
     for (iter = aho->text_list_head; iter != NULL; iter = iter->next)

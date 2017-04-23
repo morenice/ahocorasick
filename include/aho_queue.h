@@ -16,11 +16,11 @@ struct aho_queue
 };
 
 
-void aho_queue_init(struct aho_queue *que);
-void aho_queue_destroy(struct aho_queue *que);
+void aho_queue_init(struct aho_queue * restrict que);
+void aho_queue_destroy(struct aho_queue * restrict que);
 
-bool aho_queue_enqueue(struct aho_queue *que, struct aho_trie_node *node);
-struct aho_queue_node* aho_queue_dequeue(struct aho_queue * ue);
+bool aho_queue_enqueue(struct aho_queue * restrict que, struct aho_trie_node *node);
+struct aho_queue_node* aho_queue_dequeue(struct aho_queue * restrict que);
 
 /* inline */
-bool aho_queue_empty(struct aho_queue *que);
+bool aho_queue_empty(struct aho_queue * restrict que);

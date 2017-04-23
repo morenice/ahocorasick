@@ -25,16 +25,16 @@ struct aho_trie
     struct aho_trie_node root;
 };
 
-void aho_init_trie(struct aho_trie* t);
-void aho_destroy_trie(struct aho_trie* t);
+void aho_init_trie(struct aho_trie * restrict t);
+void aho_destroy_trie(struct aho_trie * restrict t);
 
-bool aho_add_trie_node(struct aho_trie* t, struct aho_text_t* text);
-void aho_connect_link(struct aho_trie* t);
-void aho_clean_trie_node(struct aho_trie* t);
+bool aho_add_trie_node(struct aho_trie * restrict t, struct aho_text_t * restrict text);
+void aho_connect_link(struct aho_trie * restrict t);
+void aho_clean_trie_node(struct aho_trie * restrict t);
 
-struct aho_text_t* aho_find_trie_node(struct aho_trie_node** start, const char text);
+struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, const char text);
 
-void aho_print_trie(struct aho_trie* t);
+void aho_print_trie(struct aho_trie * restrict t);
 
 /* TODO:
  * bool aho_del_trie_node(struct aho_trie* t, struct aho_text_t* text);

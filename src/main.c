@@ -4,7 +4,9 @@
 
 void matched(void *arg, struct aho_match_t* m)
 {
-    printf("matched id %d position %llu length %d\n", m->id, m->pos, m->len);
+    long long int* match_total = (long long int*)arg;
+    (*match_total)++;
+    //printf("matched id %d position %llu length %d\n", m->id, m->pos, m->len);
 }
 
 void sample_code()
@@ -31,6 +33,7 @@ void sample_code()
 void sample_code_bench()
 {
     struct ahocorasick aho;
+    long long int match_total = 0;
     int id[10] = {0};
 
     FILE *fp = NULL;
@@ -42,7 +45,7 @@ void sample_code_bench()
     id[1] = aho_add_match_text(&aho, "1985", 4);
 
     aho_create_trie(&aho);
-    aho_register_match_callback(&aho, matched, NULL);
+    aho_register_match_callback(&aho, matched, &match_total);
 
     fp = fopen("googlebooks-eng-all-1gram-20120701-0", "r");
     while (fgets(buf, 4096, fp) != NULL)
@@ -50,13 +53,15 @@ void sample_code_bench()
         aho_findtext(&aho, buf, strlen(buf));
     }
 
+    printf("%lld\n", match_total);
+
     aho_destroy(&aho);
     fclose(fp);
 }
 
 int main(int argc, const char *argv[])
 {
-    sample_code();
-    /* sample_code_bench(); */
+    //sample_code();
+    sample_code_bench();
     return 0;
 }

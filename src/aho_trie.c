@@ -5,25 +5,25 @@
 #include "aho_text.h"
 #include "aho_queue.h"
 
-void __aho_trie_node_init(struct aho_trie_node* node)
+void __aho_trie_node_init(struct aho_trie_node * restrict node)
 {
     memset(node, 0x00, sizeof(struct aho_trie_node));
     node->text_end = false;
     node->ref_count = 1;
 }
 
-void aho_init_trie(struct aho_trie* t)
+void aho_init_trie(struct aho_trie * restrict t)
 {
     memset(t, 0x00, sizeof(struct aho_trie));
     __aho_trie_node_init(&(t->root));
 }
 
-void aho_destroy_trie(struct aho_trie* t)
+void aho_destroy_trie(struct aho_trie * restrict t)
 {
     aho_clean_trie_node(t);
 }
 
-bool aho_add_trie_node(struct aho_trie* t, struct aho_text_t* text)
+bool aho_add_trie_node(struct aho_trie * restrict t, struct aho_text_t * restrict text)
 {
     struct aho_trie_node* travasal_node = &(t->root);
 
@@ -131,7 +131,7 @@ bool __aho_connect_link(struct aho_trie_node* p, struct aho_trie_node* q)
     return false;
 }
 
-void aho_connect_link(struct aho_trie* t)
+void aho_connect_link(struct aho_trie * restrict t)
 {
     struct aho_queue queue;
     aho_queue_init(&queue);
@@ -175,7 +175,7 @@ void aho_connect_link(struct aho_trie* t)
     aho_queue_destroy(&queue);
 }
 
-void aho_clean_trie_node(struct aho_trie* t)
+void aho_clean_trie_node(struct aho_trie * restrict t)
 {
     struct aho_queue queue;
     aho_queue_init(&queue);
@@ -212,7 +212,7 @@ void aho_clean_trie_node(struct aho_trie* t)
     }
 }
 
-bool __aho_find_trie_node(struct aho_trie_node** start, const char text)
+bool __aho_find_trie_node(struct aho_trie_node** restrict start, const char text)
 {
     struct aho_trie_node* search_node = NULL;
     int i = 0;
@@ -232,7 +232,7 @@ bool __aho_find_trie_node(struct aho_trie_node** start, const char text)
     return false;
 }
 
-struct aho_text_t* aho_find_trie_node(struct aho_trie_node** start, const char text)
+struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, const char text)
 {
     while (__aho_find_trie_node(start, text) == false)
     {
@@ -265,7 +265,7 @@ struct aho_text_t* aho_find_trie_node(struct aho_trie_node** start, const char t
     return NULL;
 }
 
-void aho_print_trie(struct aho_trie* t)
+void aho_print_trie(struct aho_trie * restrict t)
 {
     struct aho_queue queue;
     aho_queue_init(&queue);

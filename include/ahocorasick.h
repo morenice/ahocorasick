@@ -25,21 +25,21 @@ struct ahocorasick
     void* callback_arg;
 };
 
-void aho_init(struct ahocorasick* aho);
-void aho_destroy(struct ahocorasick* aho);
+void aho_init(struct ahocorasick * restrict aho);
+void aho_destroy(struct ahocorasick * restrict aho);
 
-int aho_add_match_text(struct ahocorasick* aho, const char* text, unsigned int len);
-bool aho_del_match_text(struct ahocorasick* aho, int id);
-void aho_clear_match_text(struct ahocorasick* aho);
+int aho_add_match_text(struct ahocorasick * restrict aho, const char* text, unsigned int len);
+bool aho_del_match_text(struct ahocorasick * restrict aho, const int id);
+void aho_clear_match_text(struct ahocorasick * restrict aho);
 
-void aho_create_trie(struct ahocorasick* aho);
-void aho_clear_trie(struct ahocorasick* aho);
+void aho_create_trie(struct ahocorasick * restrict aho);
+void aho_clear_trie(struct ahocorasick * restrict aho);
 
-unsigned int aho_findtext(struct ahocorasick* aho, const char* data, unsigned long long data_len);
+unsigned int aho_findtext(struct ahocorasick * restrict aho, const char* data, unsigned long long data_len);
 
-void aho_register_match_callback(struct ahocorasick *aho,
+void aho_register_match_callback(struct ahocorasick * restrict aho,
         void (*callback_match)(void* arg, struct aho_match_t*),
         void *arg);
 
 /* for debug */
-void aho_print_match_text(struct ahocorasick* aho);
+void aho_print_match_text(struct ahocorasick * restrict aho);
