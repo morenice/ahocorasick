@@ -4,6 +4,8 @@ project (ahocorasick)
 set (ahocorasick_VERSION_MAJOR 0)
 set (ahocorasick_VERSION_MINOR 1)
 
+find_package( Threads )
+
 # Choose Release or Debug
 if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
@@ -18,3 +20,4 @@ file(GLOB SOURCES "src/*.c")
 include_directories(include)
 
 add_executable(ahocorasick ${SOURCES})
+target_link_libraries(ahocorasick ${CMAKE_THREAD_LIBS_INIT})

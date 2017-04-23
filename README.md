@@ -1,6 +1,10 @@
 [![Build Status](https://travis-ci.org/morenice/ahocorasick.svg?branch=master)](https://travis-ci.org/morenice/ahocorasick)
 
 C implementation Aho-Corasick string match.
+- Support multi-thread
+- Support callback match API
+- Example(See src/main.c)
+
 
 # Build
 ```sh
@@ -8,9 +12,6 @@ $ mkdir build; cd build
 $ cmake ..
 $ make
 ```
-
-# TODO
-- support multi-thread
 
 
 # Performance
