@@ -6,7 +6,7 @@
 
 struct aho_trie_node
 {
-    char text;
+    unsigned char text;
     unsigned int ref_count;
 
     struct aho_trie_node* parent;
@@ -32,7 +32,7 @@ bool aho_add_trie_node(struct aho_trie * restrict t, struct aho_text_t * restric
 void aho_connect_link(struct aho_trie * restrict t);
 void aho_clean_trie_node(struct aho_trie * restrict t);
 
-struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, const char text);
+struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, const unsigned char text);
 
 void aho_print_trie(struct aho_trie * restrict t);
 

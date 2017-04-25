@@ -29,7 +29,7 @@ bool aho_add_trie_node(struct aho_trie * restrict t, struct aho_text_t * restric
 
     for (int text_idx = 0; text_idx < text->len; text_idx++)
     {
-        char node_text = text->text[text_idx];
+        unsigned char node_text = text->text[text_idx];
         bool find_node = false;
         int child_idx = 0;
 
@@ -212,7 +212,7 @@ void aho_clean_trie_node(struct aho_trie * restrict t)
     }
 }
 
-bool __aho_find_trie_node(struct aho_trie_node** restrict start, const char text)
+bool __aho_find_trie_node(struct aho_trie_node** restrict start, const unsigned char text)
 {
     struct aho_trie_node* search_node = NULL;
     int i = 0;
@@ -232,7 +232,7 @@ bool __aho_find_trie_node(struct aho_trie_node** restrict start, const char text
     return false;
 }
 
-struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, const char text)
+struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, const unsigned char text)
 {
     while (__aho_find_trie_node(start, text) == false)
     {

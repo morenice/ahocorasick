@@ -3,7 +3,8 @@
 C implementation Aho-Corasick string match.
 - Support multi-thread
 - Support callback match API
-- Example(See src/main.c)
+- Support multiple languages(english, korean, ...)
+- example: See src/main.c
 
 
 # Build
