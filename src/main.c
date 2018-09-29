@@ -67,6 +67,29 @@ void sample_code2()
     aho_destroy(&aho);
 }
 
+void sample_code3()
+{
+    struct ahocorasick aho;
+    int id[10] = {0};
+    char* target = "Lorem ipsum dolor sit amet, consectetur brown elit. Proin vehicula brown egestas. Aliquam a dui tincidunt, elementum sapien in, ultricies lacus. Phasellus congue, sapien nec";
+    aho_init(&aho);
+
+    id[0] = aho_add_match_text(&aho, "consectetur", strlen("consectetur"));
+    id[2] = aho_add_match_text(&aho, "Proin", strlen("Proin"));
+    id[3] = aho_add_match_text(&aho, "egestasAliquam", strlen("egestasAliquam"));
+    id[3] = aho_add_match_text(&aho, "elementum", strlen("elementum"));
+    id[4] = aho_add_match_text(&aho, "ultricies", strlen("ultricies"));
+    id[5] = aho_add_match_text(&aho, "vehicula", strlen("vehicula"));
+    
+    aho_create_trie(&aho);
+    aho_register_match_callback(&aho, callback_match_pos, (void*)target);
+
+    printf("try: %s\n", target);
+    printf("total match:%u\n", aho_findtext(&aho, target, strlen(target)));
+
+    aho_destroy(&aho);
+}
+
 void sample_code_bench_file()
 {
     struct ahocorasick aho;
@@ -161,6 +184,7 @@ int main(int argc, const char *argv[])
 {
 	sample_code();
 	sample_code2();
+    sample_code3();
     //sample_code_thread();
     //sample_code_bench_file();
     return 0;
