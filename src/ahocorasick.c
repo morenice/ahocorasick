@@ -73,15 +73,18 @@ bool aho_del_match_text(struct ahocorasick * restrict aho, const int id)
             if (iter == aho->text_list_head)
             {
                 aho->text_list_head = iter->next;
+                free(iter->text);
             }
             else if (iter == aho->text_list_tail)
             {
                 aho->text_list_tail = iter->prev;
+                free(iter->text);
             }
             else
             {
                 iter->prev->next = iter->next;
                 iter->next->prev = iter->prev;
+                free(iter->text);
             }
             free(iter);
             aho->text_list_len--;
