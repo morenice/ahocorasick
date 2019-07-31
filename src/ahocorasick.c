@@ -34,7 +34,7 @@ int aho_add_match_text(struct ahocorasick * restrict aho, const char* text, unsi
         goto lack_free_mem;
 
     a_text->id = aho->accumulate_text_id++;
-    memcpy(a_text->text, text, len);
+    memcpy(a_text->text, text, len+1);
     a_text->len = len;
     a_text->prev = NULL;
     a_text->next = NULL;
@@ -139,7 +139,7 @@ unsigned int aho_findtext(struct ahocorasick * restrict aho, const char* data, u
     {
         struct aho_match_t match;
         struct aho_text_t* result;
-
+        
         result = aho_find_trie_node(&travasal_node, data[i]);
         if (result == NULL)
         {
