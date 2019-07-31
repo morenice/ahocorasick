@@ -73,6 +73,7 @@ bool aho_add_trie_node(struct aho_trie * restrict t, struct aho_text_t * restric
             struct aho_trie_node* child_node = NULL;
 
             travasal_node->child_list[travasal_node->child_count] =
+
                          (struct aho_trie_node*) malloc(sizeof(struct aho_trie_node));
 
             child_node = travasal_node->child_list[travasal_node->child_count];
@@ -101,15 +102,13 @@ bool __aho_connect_link(struct aho_trie_node* p, struct aho_trie_node* q)
     int i = 0;
 
     /* is root node */
-    if (p->parent == NULL)
+    if (p->failure_link == NULL || p->parent == NULL)
     {
         q->failure_link = p;
         return true;
     }
 
     pf = p->failure_link;
-    if( pf == NULL )
-        return true;
     for (i=0; i < pf->child_count; i++)
     {
         /* check child node of failure link(p) */
