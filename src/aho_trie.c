@@ -73,6 +73,7 @@ bool aho_add_trie_node(struct aho_trie * restrict t, struct aho_text_t * restric
             struct aho_trie_node* child_node = NULL;
 
             travasal_node->child_list[travasal_node->child_count] =
+
                          (struct aho_trie_node*) malloc(sizeof(struct aho_trie_node));
 
             child_node = travasal_node->child_list[travasal_node->child_count];
@@ -101,7 +102,7 @@ bool __aho_connect_link(struct aho_trie_node* p, struct aho_trie_node* q)
     int i = 0;
 
     /* is root node */
-    if (p->parent == NULL)
+    if (p->failure_link == NULL || p->parent == NULL)
     {
         q->failure_link = p;
         return true;
@@ -218,6 +219,8 @@ bool __aho_find_trie_node(struct aho_trie_node** restrict start, const unsigned 
     int i = 0;
 
     search_node = *start;
+    if ( search_node == NULL)
+        return false;
     for (i = 0; i < search_node->child_count; i++)
     {
         if (search_node->child_list[i]->text == text)
@@ -239,7 +242,8 @@ struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, con
         /* not found!
          * when root node stop
          */
-        if( (*start)->parent == NULL)
+
+        if( *start == NULL || (*start)->parent == NULL)
         {
             return NULL;
         }
