@@ -235,7 +235,7 @@ bool __aho_find_trie_node(struct aho_trie_node** restrict start, const unsigned 
     return false;
 }
 
-struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, const unsigned char text)
+struct aho_trie_node* aho_find_trie_node(struct aho_trie_node** restrict start, const unsigned char text)
 {
     while (__aho_find_trie_node(start, text) == false)
     {
@@ -253,20 +253,7 @@ struct aho_text_t* aho_find_trie_node(struct aho_trie_node** restrict start, con
     }
 
     /* found node... */
-    /* match case1: find text end! */
-    if ((*start)->text_end)
-    {
-        return (*start)->output_text;
-    }
-
-    /* match case2: exist output_link */
-    if ((*start)->output_link)
-    {
-        return (*start)->output_link->output_text;
-    }
-
-    /* keep going */
-    return NULL;
+    return *start;
 }
 
 void aho_print_trie(struct aho_trie * restrict t)
