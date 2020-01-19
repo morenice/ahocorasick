@@ -29,7 +29,7 @@ int aho_add_match_text(struct ahocorasick * restrict aho, const char* text, unsi
     if (!a_text)
         goto lack_free_mem;
 
-    a_text->text = (char*) malloc(sizeof(char)*len);
+    a_text->text = (char*) malloc(len+1);
     if (!a_text->text)
         goto lack_free_mem;
 
@@ -127,6 +127,30 @@ void aho_clear_trie(struct ahocorasick * restrict aho)
     aho_destroy_trie(&aho->trie);
 }
 
+unsigned int aho_trie_node_recursive_callback(struct ahocorasick * restrict aho, struct aho_trie_node * restrict node, int offset)
+{
+	int retval = 0;
+	if (node) {
+		if (node->text_end) {
+			retval++;
+			if (aho->callback_match) {
+				//~ result->output_text->text
+				struct aho_match_t match;
+				match.id = node->output_text->id;
+				match.len = node->output_text->len;
+				match.pos = offset - node->output_text->len + 1;
+				aho->callback_match(aho->callback_arg, &match);
+			}
+		}
+
+		/* match case2: exist output_link */
+		if (node->output_link) {
+			retval += aho_trie_node_recursive_callback(aho, node->output_link, offset);
+		}
+	}
+	return retval;
+}
+
 unsigned int aho_findtext(struct ahocorasick * restrict aho, const char* data, unsigned long long data_len)
 {
     int i = 0;
@@ -137,28 +161,10 @@ unsigned int aho_findtext(struct ahocorasick * restrict aho, const char* data, u
 
     for (i = 0; i < data_len; i++)
     {
-        struct aho_match_t match;
-        struct aho_text_t* result;
-        
-        result = aho_find_trie_node(&travasal_node, data[i]);
-        if (result == NULL)
+        struct aho_trie_node* result = aho_find_trie_node(&travasal_node, data[i]);
+        if (result)
         {
-            continue;
-        }
-
-        match.id = result->id;
-        match.len = result->len;
-
-        match.pos = i - result->len + 1;
-        if (result->len == 1)
-        {
-            match.pos = i;
-        }
-
-        match_count++;
-        if (aho->callback_match)
-        {
-            aho->callback_match(aho->callback_arg, &match);
+			match_count += aho_trie_node_recursive_callback(aho, result, i);
         }
     }
 
