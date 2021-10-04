@@ -29,7 +29,7 @@ int aho_add_match_text(struct ahocorasick * restrict aho, const char* text, unsi
     if (!a_text)
         goto lack_free_mem;
 
-    a_text->text = (char*) malloc(sizeof(char)*len);
+    a_text->text = (char*) malloc(sizeof(char)*len+1);
     if (!a_text->text)
         goto lack_free_mem;
 
